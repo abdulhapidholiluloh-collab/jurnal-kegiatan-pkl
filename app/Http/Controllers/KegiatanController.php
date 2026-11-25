@@ -12,7 +12,8 @@ class KegiatanController extends Controller
      */
     public function index()
     {
-        //
+        $kegiatans = Kegiatan::orderBy('tanggal','desc')->get();
+        return view('kegiatan.index', compact('kegiatans'));
     }
 
     /**
@@ -20,7 +21,7 @@ class KegiatanController extends Controller
      */
     public function create()
     {
-        //
+        return view('kegiatan.create');
     }
 
     /**
@@ -28,7 +29,14 @@ class KegiatanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'tanggal'=> 'required|date',
+            'judul_kegiatan'=> 'required|string|max:255',
+            'deskripsi'=>'required|string',
+        ]);
+        Kegiatan::create($validated);
+
+        return redirect()->route('kegiatan.index')->with('success', 'Kegiatan Berhasil Ditambahkan!');
     }
 
     /**
@@ -42,17 +50,23 @@ class KegiatanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Kegiatan $kegiatan)
+        public function edit(Kegiatan $kegiatan)
     {
-        //
+        return view('kegiatan.edit', compact('kegiatan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Kegiatan $kegiatan)
     {
-        //
+        $validated = $request->validate([
+            'tanggal' => 'required|date',
+            'judul_kegiatan' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+        ]);
+
+        $kegiatan->update($validated);
+
+        return redirect()->route('kegiatan.index')
+                         ->with('success', 'Kegiatan berhasil diperbarui!');
     }
 
     /**
@@ -60,6 +74,8 @@ class KegiatanController extends Controller
      */
     public function destroy(Kegiatan $kegiatan)
     {
-        //
+        $kegiatan->delete();
+        return redirect()->route('kegiatan'.index)
+        ->with('success', 'Kegiatan Berhasil dihapus');
     }
 }
